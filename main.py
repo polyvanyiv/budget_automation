@@ -100,6 +100,8 @@ def process_bank(bank):
     dataframe.fillna('')
     # Iterate through every row in CSV and put data into GSP
     dataframe = dataframe.reset_index();
+    unmapped = list()
+    mapped = list()
     for i, row in dataframe.iterrows():
         opis = row[description_header]
         print(opis, row[sum_header])
@@ -111,7 +113,7 @@ def process_bank(bank):
 
         category = map_to_category(opis).split('|')
         if category[0]=='default':
-            worksheet_unmapped.append_row([
+            unmapped.append([
                 strptime.date().__str__(),
                 lastDayOfMonth.__str__(),
                 category[0],
@@ -120,10 +122,20 @@ def process_bank(bank):
                 # row[sum_header] * -1,
                 # float(row[sum_header].replace(',','.').replace(' ',''))*-1,
                 opis
-            ],
-                'RAW', 'INSERT_ROWS', 'A1')
+            ])
+            # worksheet_unmapped.append_row([
+            #     strptime.date().__str__(),
+            #     lastDayOfMonth.__str__(),
+            #     category[0],
+            #     category[1],
+            #     convert_sum(bank, row[sum_header]),
+            #     # row[sum_header] * -1,
+            #     # float(row[sum_header].replace(',','.').replace(' ',''))*-1,
+            #     opis
+            # ],
+            #     'RAW', 'INSERT_ROWS', 'A1')
         else:
-            worksheet_expenses.append_row([
+            mapped.append([
                 strptime.date().__str__(),
                 lastDayOfMonth.__str__(),
                 category[0],
@@ -132,8 +144,21 @@ def process_bank(bank):
                 # row[sum_header] * -1,
                 # float(row[sum_header].replace(',','.').replace(' ',''))*-1,
                 opis
-            ],
-                'RAW', 'INSERT_ROWS', 'A1')
+            ])
+            # worksheet_expenses.append_row([
+            #     strptime.date().__str__(),
+            #     lastDayOfMonth.__str__(),
+            #     category[0],
+            #     category[1],
+            #     convert_sum(bank, row[sum_header]),
+            #     # row[sum_header] * -1,
+            #     # float(row[sum_header].replace(',','.').replace(' ',''))*-1,
+            #     opis
+            # ],
+            #     'RAW', 'INSERT_ROWS', 'A1')
+    worksheet_unmapped.append_rows(unmapped, 'RAW', 'INSERT_ROWS', 'A1')
+    worksheet_expenses.append_rows(mapped, 'RAW', 'INSERT_ROWS', 'A1')
+
 
 # Set the scope and credentials
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
@@ -151,9 +176,9 @@ worksheets = spreadsheet.worksheets()
 spreadsheet.del_worksheet_by_id(worksheets[worksheets.__len__()-1].id)
 worksheet_expenses.duplicate(new_sheet_name='Backup_Expenses_'+date.today().strftime('%d-%m'),insert_sheet_index=99);
 
-# process_bank('Mil')
+process_bank('Mil')
 process_bank('Pekao')
-# process_bank('ING')
+process_bank('ING')
 
 
 
