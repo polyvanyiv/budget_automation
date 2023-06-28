@@ -28,6 +28,12 @@ mapping = {
     'SCBSA Centrala': 'Loan|iPhone',
     'Alior centrala': 'Business|Loan',
     'Wspolnota Mieszkaniowa': 'Service|Komunalka',
+    'Andriy Kravchenko Inve': 'Food|Hutorok',
+    'McDonalds': 'Cafes|McDonald\'s',
+    'MODERN VETERINARY': 'Whisky|Vet',
+    'CUCINA APERTA RISTORAN': 'Cafes|Lunch',
+    'CUCINA APERTA RISTORAN': 'Cafes|Lunch',
+    'CUCINA APERTA RISTORAN': 'Service|AppleStore',
 }
 
 def map_to_category(input_str):
@@ -47,11 +53,11 @@ def map_to_category(input_str):
 def convert_sum(bank, sum):
     match bank:
         case 'Mil':
-            return sum * -1
+            return float(sum) * -1 if sum != '' else 0
         case 'Pekao':
-            return float(sum.replace(',','.').replace(' ',''))*-1
+            return float(sum.replace(',','.').replace(' ',''))*-1 if sum != '' else 0
         case 'ING':
-            return float(sum.replace(',','.').replace(' ',''))*-1
+            return float(sum.replace(',','.').replace(' ',''))*-1 if sum != '' else 0
         case _:
             return 0
 
@@ -176,8 +182,8 @@ worksheets = spreadsheet.worksheets()
 spreadsheet.del_worksheet_by_id(worksheets[worksheets.__len__()-1].id)
 worksheet_expenses.duplicate(new_sheet_name='Backup_Expenses_'+date.today().strftime('%d-%m'),insert_sheet_index=99);
 
-process_bank('Mil')
-process_bank('Pekao')
+# process_bank('Mil')
+# process_bank('Pekao')
 process_bank('ING')
 
 
