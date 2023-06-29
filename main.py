@@ -32,8 +32,8 @@ mapping = {
     'McDonalds': 'Cafes|McDonald\'s',
     'MODERN VETERINARY': 'Whisky|Vet',
     'CUCINA APERTA RISTORAN': 'Cafes|Lunch',
-    'CUCINA APERTA RISTORAN': 'Cafes|Lunch',
-    'CUCINA APERTA RISTORAN': 'Service|AppleStore',
+    'Food court': 'Cafes|Lunch',
+    'APPLE.COM': 'Service|AppleStore',
 }
 
 def map_to_category(input_str):
