@@ -4,38 +4,110 @@ import calendar
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime, date
 
+
 mapping = {
     'JET WASH': 'Car|Wash',
     'BP-KRAKOWIAK': 'Car|Petrol',
+    'BP-OLSZA': 'Car|Petrol',
+    'SkyCash': 'Car|Parking',
+    'Galeria Krakowska Parking': 'Car|Parking',
+    'GALERIA KRAKOWSKA - PARKI': 'Car|Parking',
+    'GALERIA KAZIMIERZ PARKING': 'Car|Parking',
     'ZABKA': 'Food|Zabka',
     'BIEDRONKA': 'Food|Biedronka',
+    'CARREFOUR': 'Food|Carrefour',
+    'LIDL': 'Food|Lidl',
+    'OAZA': 'Food|Junk',
+    'LYSKI': 'Food|VetchinaKrokus',
+    'ANDRIY KRAVCHENKO': 'Food|Hutorok',
+    'CHUTORO': 'Food|Hutorok',
+    'SHOP BISTRO  KRAKOW': 'Food|Korean',
     'AUCHAN': 'Food|Auchan',
     'TRANSGOURMET': 'Food|Selgros',
+    'KABOOM': 'Food|Bazar',
+    'FOKARNIA': 'Food|Bazar',
+    'Owoce i Warzywa M. Kura': 'Food|Bazar',
+    'WINE HAM AND CHEESE': 'Food|Bazar',
+    'JAMON4YOU': 'Food|Bazar',
+    'GERMES BOX 47': 'Food|Bazar',
+    'OLIWKI ETC': 'Food|Bazar',
+    'ESNAF': 'Food|Bazar',
+    'WESOLA PANI': 'Food|GalyaBaluvana',
+    'KFC': 'Food delivery|KFC',
+    'SUSHI HERO': 'Food delivery|Sushi',
     'ANASTASIIA ZAKHAROVA': 'Nastya|Cash',
     'Anastasiia Zakharova': 'Nastya|Cash',
+    'Anastasiia Polyvana': 'Nastya|Cash',
     'PIEKARNIA BUCZEK': 'Cafes|Coffee',
     'CUKIERNIA': 'Cafes|Coffee',
     'NAKIELNY': 'Cafes|Coffee',
-    'KABOOM': 'Food|Bazar',
-    'JAMON4YOU': 'Food|Bazar',
-    'KFC': 'Food delivery|KFC',
+    'BLOOM': 'Cafes|Coffee',
+    'Kawa Zwierzyniecka': 'Cafes|Coffee',
+    'FUNDACJA AKTYWNA INTEGRAC': 'Cafes|Coffee',
     'Bistro w Archeturze ': 'Cafes|Lunch',
+    'PROSECCCO': 'Cafes|Lunch',
+    'SMASHER': 'Cafes|Lunch',
+    'GOSSIP CAFE': 'Cafes|Lunch',
+    'MEXICAN FOOD GABRIEL DALL': 'Cafes|Lunch',
+    'Liberte': 'Cafes|Lunch',
+    'SOWILO': 'Cafes|Lunch',
+    'RESTAURACJA OLIMP': 'Cafes|Lunch',
     'BOLT.EU': 'Service|Taxi',
     'KYIVSTAR': 'Service|Mobile phone',
-    'Apteka': 'Health|Pharmacy',
-    'Studio Klaru': 'Health|Manic',
     'Internetia ': 'Service|Internet',
+    'doladowania.play.pl': 'Service|Mobile phone',
+    'Apteka': 'Health|Pharmacy',
+    'APTEKA HYGIEIA': 'Health|Pharmacy',
+    'OLIMPSTORE.P': 'Health|Supplements',
+    ' OLIMPSTORE.PL': 'Health|Supplements',
+    'SUPER-PHARM': 'Health|Pharmacy',
+    'ROSSMANN': 'Health|Rossmann',
+    'Studio Klaru': 'Health|Manic',
+    'NAILS.KRK.PL': 'Health|Manic',
+    'ms.ski11s': 'Health|Manic',
     'SCBSA Centrala': 'Loan|iPhone',
     'Alior centrala': 'Business|Loan',
     'Wspolnota Mieszkaniowa': 'Service|Komunalka',
+    'WM Reduta 42C i 42D': 'Service|Komunalka',
     'Andriy Kravchenko Inve': 'Food|Hutorok',
     'McDonalds': 'Cafes|McDonald\'s',
     'MODERN VETERINARY': 'Whisky|Vet',
+    'Maxi Zoo Polska': 'Whisky|PetShop',
+    'zooplus': 'Whisky|Food',
+    'LEOPARDUS': 'Whisky|PetShop',
+    'SALON DOGLAMOUR': 'Whisky|Groomer',
+    'Gabriela': 'Whisky|Groomer',
     'CUCINA APERTA RISTORAN': 'Cafes|Lunch',
     'Food court': 'Cafes|Lunch',
     'APPLE.COM': 'Service|AppleStore',
+    'GAMA': 'Home|misc',
+    'RATY-REGULARNA': 'Loan|Mortgage',
+    'SHANSHAN': 'Home|Chinese',
+    'LULANG': 'Home|Chinese',
+    'hhcworld.eu': 'Drugs|Weed',
+    'Bonzzini Sp.zo.o.': 'Entertainment|Billiard',
+    'KLUB BILARDOWY DIAMENT': 'Entertainment|Billiard',
+    'RESERVED': 'Clothes|TBC',
+    'ZARA': 'Clothes|TBC',
+    'CCC': 'Clothes|TBC',
+    'HM': 'Clothes|TBC',
+    'Aegon': 'Insurance|Health',
+    'SAD REJONOWY': 'Divorce|Court',
+    'Florima': 'Nastya|Flowers',
+    'FLORIMA MARYNA DZMITRUK': 'Nastya|Flowers',
+    'SHEIN.COM': 'Nastya|Shein',
+    'TAURON': 'Service|Electricity',
+    'YouTubePremium': 'Service|YouTube',
+    'DOZO': 'Cafes|Lunch',
+    'FLAME69': 'Cafes|Lunch',
+    'Bistro Fabryczna': 'Cafes|Lunch',
+    'ZIELONE KATY': 'Cafes|Coffee',
+    'IKEA': 'Home|Ikea',
+    'Nowy VitalVet': 'Whisky|Vet',
+    'AHOP S.A.': 'Whisky|Vet',
+    'KAWEP SP. Z O.O. GASTRONO': 'Service|YouTube',
+    'AMVET KRAKOW': 'Whisky|Vet',
 }
-
 def map_to_category(input_str):
     matching_keys = [key for key in mapping.keys() if key in input_str]
 
@@ -93,7 +165,9 @@ def process_bank(bank):
             date_format = '%Y-%m-%d'
             unmapped_sheet = 'ING_unmapped'
             delimiter = ';'
-            skiprows = 21
+            # skiprows = 21  # header row = 23
+            # skiprows = 22  # header row = 24
+            skiprows = 17  # header row = 19
             skipfooter = 1
             encoding = 'cp1252'
         case _:
@@ -184,7 +258,7 @@ worksheet_expenses.duplicate(new_sheet_name='Backup_Expenses_'+date.today().strf
 
 # process_bank('Mil')
 # process_bank('Pekao')
-process_bank('ING')
+# process_bank('ING')
 
 
 
