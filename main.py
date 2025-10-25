@@ -82,6 +82,7 @@ mapping = {
     'APPLE.COM': 'Service|AppleStore',
     'GAMA': 'Home|misc',
     'RATY-REGULARNA': 'Loan|Mortgage',
+    'Kredyt D164-KSI-31DJ9O0825': 'Loan|Mortgage',
     'SHANSHAN': 'Home|Chinese',
     'LULANG': 'Home|Chinese',
     'hhcworld.eu': 'Drugs|Weed',
@@ -100,6 +101,11 @@ mapping = {
     'YouTubePremium': 'Service|YouTube',
     'DOZO': 'Cafes|Lunch',
     'FLAME69': 'Cafes|Lunch',
+    'MUHABBET': 'Cafes|Lunch',
+    'HANA SUSHI': 'Cafes|Lunch',
+    'IWONA ZABOROWSKA': 'Cafes|Lunch',
+    'olimpstore.pl': 'Health|Supplements',
+    'KOLEO ': 'Travel|Tickets',
     'Bistro Fabryczna': 'Cafes|Lunch',
     'ZIELONE KATY': 'Cafes|Coffee',
     'IKEA': 'Home|Ikea',
@@ -130,6 +136,14 @@ def convert_sum(bank, sum):
             return float(sum.replace(',','.').replace(' ',''))*-1 if sum != '' else 0
         case 'ING':
             return float(sum.replace(',','.').replace(' ',''))*-1 if sum != '' else 0
+        case 'BNP':
+            # Handle both string (CSV) and numeric (Excel) values
+            if isinstance(sum, (int, float)):
+                return float(sum) * -1 if sum != 0 else 0
+            # Handle string values
+            if sum == '':
+                return 0
+            return float(sum.replace(',','.').replace(' ','')) * -1
         case _:
             return 0
 
@@ -170,23 +184,46 @@ def process_bank(bank):
             skiprows = 17  # header row = 19
             skipfooter = 1
             encoding = 'cp1252'
+        case 'BNP':
+            csv = 'Zestawienie operacji.xlsx'
+            file_type = 'xlsx'
+            description_header = 'Opis'
+            sum_header = 'Kwota'
+            date_header = 'Data transakcji'
+            date_format = '%Y-%m-%d'
+            unmapped_sheet = 'BNP_unmapped'
+            delimiter = None  # Not needed for xlsx
+            skiprows = 0
+            skipfooter = 0
+            encoding = None  # Not needed for xlsx
         case _:
             return
 
     global date
     worksheet_unmapped = spreadsheet.worksheet(unmapped_sheet)
     # Read and process the CSV file using pandas
-    dataframe = pd.read_csv(csv, keep_default_na=False, skiprows=skiprows, skipfooter=skipfooter, on_bad_lines='skip', delimiter=delimiter, encoding=encoding)
+    if file_type == 'xlsx':
+        dataframe = pd.read_excel(csv, skiprows=skiprows, skipfooter=skipfooter)
+    else:
+        dataframe = pd.read_csv(csv, keep_default_na=False, skiprows=skiprows, skipfooter=skipfooter,
+                                on_bad_lines='skip', delimiter=delimiter, encoding=encoding)
     dataframe.fillna('')
     # Iterate through every row in CSV and put data into GSP
-    dataframe = dataframe.reset_index();
+    dataframe = dataframe.reset_index()
     unmapped = list()
     mapped = list()
     for i, row in dataframe.iterrows():
         opis = row[description_header]
+        # Handle NaN or non-string values in description (common in Excel)
+        if not isinstance(opis, str):
+            opis = str(opis) if pd.notna(opis) else ''
         print(opis, row[sum_header])
         date = row[date_header]
-        strptime = datetime.strptime(date, date_format)
+        # Handle both string dates (CSV) and datetime objects (Excel)
+        if isinstance(date, str):
+            strptime = datetime.strptime(date, date_format)
+        else:
+            strptime = date if hasattr(date, 'year') else datetime.strptime(str(date), date_format)
         res = calendar.monthrange(strptime.year, strptime.month)
         day = res[1]
         lastDayOfMonth = strptime.replace(day=day)
@@ -259,6 +296,7 @@ worksheet_expenses.duplicate(new_sheet_name='Backup_Expenses_'+date.today().strf
 # process_bank('Mil')
 # process_bank('Pekao')
 # process_bank('ING')
+process_bank('BNP')
 
 
 
